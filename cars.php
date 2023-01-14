@@ -1,57 +1,69 @@
 <?php 
 
-<?php 
-
 class Cars 
 { 
-    public $cars = [];  
-    public $client;  
-
-   public function __construct(array $cars, $client) 
+   public int $clientLocation;  
+   
+   public array $cars = [];
+    
+   public function __construct(int $taxiAmount) 
    {
-       $this->cars = $cars; 
-       $this->client = $client;     
+       $this->clientLocation = rand(0,1000); //new
+       $this->cars = $this->getCarsArray($taxiAmount);
+       $this->printTaxiForClient();
    }
     
-    public function getFreeTaxi () {   
-        foreach ($this->cars as $car){ 
-        $distance = abs($car['position'] - $this->client); 
+    public function getCarsArray(int $taxiAmount): array
+    {
+        $cars = [];
+        for($loop = 1; $loop <= $taxiAmount; $loop++) {
+            $cars[] = [
+                    'name' => 'Taxi ' . $loop, 
+                    'position' => rand (0,1000), 
+                    'isFree' => (bool) rand (0,1)
+                ];  
+        }
+        
+        return $cars; 
+    }   
+       
+    public function getFreeTaxiName(): string 
+    {   
+        foreach ($this->cars as $car) { 
+        $distance = abs($car['position'] - $this->clientLocation); 
             if ($car['isFree'] = true)
             {
                 if(!isset($distance_min) || $distance < $distance_min) 
                 {
                     $distance_min = $distance;
-                    $result = $car['name']; 
+                    $taxiName = $car['name']; 
                 }
             }     
         }
-        return $result; 
+
+        return $taxiName;
     }  
+    
+    public function printTaxiForClient(): void
+    {
+        foreach ($this->cars as $car) {
+            echo 'Наименование такси: ' . $car['name'];
+            echo ($car['name'] == $this->getFreeTaxiName()) ? ' Едет это такси' : '';
+            echo "\n";
+            
+            echo 'Позиция такси: ' . $car['position'] . 'км' . "\n";
+            echo 'Позиция клиента: ' . $this->clientLocation . 'км' . "\n";
+            
+            echo 'Дистанция до клиента:';
+            echo abs($car['position']) - $this->clientLocation . 'км';
+            
+            echo "\n";
+            echo 'Статус: ';
+            echo ($car['isFree'] = true) ? 'Свободно' : 'Занято';
+            
+            echo "\n\n";
+        }
+    }
 }
 
-$cars  = [ 
-    ['name' => 'Taxi 1', 'position' => rand (0,1000), 'isFree' => (bool) rand (0,1)], 
-    ['name' => 'Taxi 2', 'position' => rand (0,1000), 'isFree' => (bool) rand (0,1)],
-    ['name' => 'Taxi 3', 'position' => rand (0,1000), 'isFree' => (bool) rand (0,1)],
-    ['name' => 'Taxi 4', 'position' => rand (0,1000), 'isFree' => (bool) rand (0,1)],
-    ['name' => 'Taxi 5', 'position' => rand (0,1000), 'isFree' => (bool) rand (0,1)],
-    ]; 
-
-$client = rand(0,1000); 
-
-$freetaxi = new Cars($cars,$client); 
-$freetaxi->getFreeTaxi();  
-
-?> 
-
-<?php foreach ($freetaxi->cars as $car): ?>
-<li> 
-Наименование такси: <?php echo $car['name'] ?> <?php echo $car['name'] === $freetaxi->getFreeTaxi($freetaxi->cars) ? 'Едет это такси' : '';?> <br>
-Позиция такси: <?php echo $car['position'];?> км <br>
-Позиция клиента: <?php echo $freetaxi->client;?> км <br>
-Дистанция до клиента: <?php echo abs($car['position'] - $freetaxi->client);?> км <br>
-Статус: <?php echo $car['isFree'] = true ? 'Свободно' : 'Занято'; ?> 
-</li> 
-<?php endforeach; ?> 
-
-</ul> 
+new Cars(9); 
